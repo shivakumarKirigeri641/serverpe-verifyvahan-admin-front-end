@@ -16,6 +16,11 @@ export const clearToken = () => sessionStorage.removeItem(KEY);
 let onUnauthorized = () => {};
 export const setUnauthorizedHandler = (fn) => { onUnauthorized = fn; };
 
+/* The Toaster registers here so every write (POST/PUT/PATCH/DELETE) auto-shows a
+   success or error toast — no page has to wire it up. */
+let onToast = null;
+export const setToastHandler = (fn) => { onToast = fn; };
+
 async function request(path, { method = 'GET', body } = {}) {
   const headers = { Accept: 'application/json' };
   const token = getToken();
@@ -35,9 +40,13 @@ async function request(path, { method = 'GET', body } = {}) {
 
   let json = null;
   try { json = await res.json(); } catch { /* non-JSON */ }
+  const isWrite = method !== 'GET';
   if (!res.ok || (json && json.success === false)) {
-    throw new Error((json && json.message) || `Request failed (${res.status})`);
+    const msg = (json && json.message) || `Request failed (${res.status})`;
+    if (isWrite) onToast?.({ message: msg, type: 'error' });
+    throw new Error(msg);
   }
+  if (isWrite) onToast?.({ message: (json && json.message) || 'Saved', type: 'success' });
   return json;
 }
 

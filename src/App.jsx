@@ -12,6 +12,7 @@ import Vehicles from './pages/Vehicles.jsx';
 import Visitors from './pages/Visitors.jsx';
 import Broadcast from './pages/Broadcast.jsx';
 import Settings from './pages/Settings.jsx';
+import Toaster from './components/Toaster.jsx';
 
 const PAGES = {
   dashboard: Dashboard, finance: Finance, gst: Gst, tickets: Tickets, inbox: Inbox, users: Users,
@@ -26,14 +27,15 @@ export default function App() {
     setUnauthorizedHandler(() => setAuthed(false));
   }, []);
 
-  if (!authed) return <Login onAuthed={() => setAuthed(true)} />;
-
   const Page = PAGES[page] || Dashboard;
   const logout = () => { clearToken(); setAuthed(false); };
 
   return (
-    <Layout page={page} setPage={setPage} onLogout={logout}>
-      <Page />
-    </Layout>
+    <>
+      {authed
+        ? <Layout page={page} setPage={setPage} onLogout={logout}><Page /></Layout>
+        : <Login onAuthed={() => setAuthed(true)} />}
+      <Toaster />
+    </>
   );
 }

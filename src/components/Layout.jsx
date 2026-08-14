@@ -47,8 +47,12 @@ export default function Layout({ page, setPage, onLogout, children }) {
     <div className="min-h-screen lg:grid lg:grid-cols-[256px_1fr]">
       {/* sidebar (desktop) */}
       <aside className="hidden lg:flex flex-col border-r border-line bg-white p-4">
-        <div className="flex items-center gap-2.5 px-1.5 py-2 font-extrabold text-ink">
-          <Mark /> Gaadi<span className="text-brand">Pe</span>
+        <div className="flex items-center gap-2.5 px-1.5 py-2">
+          <Mark />
+          <div className="leading-tight">
+            <div className="font-extrabold text-ink">Gaadi<span className="text-brand">Pe</span></div>
+            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">Admin console</div>
+          </div>
         </div>
         <div className="mt-6 flex-1"><NavList /></div>
         <button onClick={onLogout} className="btn-ghost mt-2 w-full text-sm">Sign out</button>
