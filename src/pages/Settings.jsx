@@ -11,6 +11,7 @@ export default function Settings() {
   const [content, setContent] = useState({ benefits: [], why: [] });
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState('');
+  const [confirm, setConfirm] = useState('');
 
   const load = () => api.settings().then((d) => {
     setData(d);
@@ -49,6 +50,16 @@ export default function Settings() {
   const setRow = (list, i, k, v) => setContent((c) => ({ ...c, [list]: c[list].map((r, j) => (j === i ? { ...r, [k]: v } : r)) }));
   const addRow = (list, blank) => setContent((c) => ({ ...c, [list]: [...c[list], blank] }));
   const delRow = (list, i) => setContent((c) => ({ ...c, [list]: c[list].filter((_, j) => j !== i) }));
+
+  const resetData = async () => {
+    setBusy('reset'); setErr('');
+    try {
+      const r = await api.resetTestData(confirm);
+      const c = r.cleared || {};
+      flash(`Test data cleared — ${c.users || 0} users, ${c.vehicles || 0} vehicles, ${c.reports || 0} reports, ${c.messages || 0} messages removed.`);
+      setConfirm('');
+    } catch (e) { setErr(e.message); } finally { setBusy(''); }
+  };
 
   const b = data.business || {};
   return (
@@ -163,6 +174,36 @@ export default function Settings() {
               ))}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Danger zone — reset test data before go-live */}
+      <div className="mt-6 card border-2 border-red-200 p-6">
+        <div className="flex items-center gap-2">
+          <span className="text-red-600">⚠️</span>
+          <h2 className="font-bold text-red-700">Danger zone — reset test data</h2>
+        </div>
+        <p className="mt-2 max-w-2xl text-sm text-muted">
+          Permanently deletes all <b>test / transactional data</b> — users, WhatsApp sessions &amp; messages,
+          vehicles, reports, payments, invoices, consents, visits and ULIP logs — and resets invoice/report
+          numbering. Report PDFs aren’t stored on disk, so clearing the rows removes them everywhere.
+          <b className="text-ink"> Your config is kept</b> (business, policies, pricing, states). Use this once
+          before going live. <b className="text-red-700">Cannot be undone.</b>
+        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <input
+            className="input w-48 border-red-200"
+            placeholder="Type RESET"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+          />
+          <button
+            className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700 disabled:opacity-40"
+            disabled={confirm.trim().toUpperCase() !== 'RESET' || busy === 'reset'}
+            onClick={resetData}
+          >
+            {busy === 'reset' ? 'Clearing…' : 'Reset test data'}
+          </button>
         </div>
       </div>
     </>

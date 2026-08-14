@@ -72,6 +72,7 @@ export const api = {
   setMaxVehicles: (max) => request('/settings/max-vehicles', { method: 'PUT', body: { max } }),
   setContent: (content) => request('/settings/content', { method: 'PUT', body: content }),
   broadcast: (message, numbers) => request('/broadcast', { method: 'POST', body: { message, numbers } }),
+  resetTestData: (confirm) => request('/maintenance/reset-test-data', { method: 'POST', body: { confirm } }),
 };
 
 /* The PDF endpoint needs the bearer token, so a plain link won't do — fetch it
