@@ -12,6 +12,9 @@ export default function Settings() {
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [history, setHistory] = useState([]);
+  const loadHistory = () => api.planHistory().then((r) => setHistory(r.history || [])).catch(() => {});
+  useEffect(() => { loadHistory(); }, []);
 
   const load = () => api.settings().then((d) => {
     setData(d);
@@ -37,7 +40,7 @@ export default function Settings() {
     try {
       await api.setPlans(plans);
       await api.setMaxVehicles(maxVehicles);
-      flash('Pricing, validity & cart limit saved.'); await load();
+      flash('Pricing, validity & cart limit saved.'); await load(); loadHistory();
     } catch (e) { setErr(e.message); } finally { setBusy(''); }
   };
   const setPlan = (code, k, v) => setPlans((p) => ({ ...p, [code]: { ...p[code], [k]: v } }));
@@ -95,6 +98,32 @@ export default function Settings() {
           <button className="btn-primary mt-5" disabled={busy === 'plans'} onClick={savePlans}>
             {busy === 'plans' ? 'Saving…' : 'Save pricing'}
           </button>
+
+          {history.length > 0 && (
+            <div className="mt-6 border-t border-line pt-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-muted">Price change history</h3>
+              <div className="mt-2 max-h-52 space-y-1.5 overflow-y-auto pr-1">
+                {history.map((h) => (
+                  <div key={h.id} className="flex items-center justify-between gap-3 text-xs">
+                    <span className="font-semibold text-ink">
+                      {h.plan_code === 'PREMIUM_2W3W' ? '2/3W' : '4W+'}
+                    </span>
+                    <span className="text-body">
+                      {Number(h.old_amount) !== Number(h.new_amount) && (
+                        <>₹{Number(h.old_amount)} → <b className="text-ink">₹{Number(h.new_amount)}</b> </>
+                      )}
+                      {Number(h.old_validity_days) !== Number(h.new_validity_days) && (
+                        <>· {h.old_validity_days}→{h.new_validity_days}d </>
+                      )}
+                    </span>
+                    <span className="shrink-0 text-muted">
+                      {new Date(h.changed_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ULIP rates */}
