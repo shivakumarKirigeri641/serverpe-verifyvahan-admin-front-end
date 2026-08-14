@@ -69,6 +69,7 @@ export const api = {
   settings: () => request('/settings'),
   setUlipRates: (rates) => request('/settings/ulip-rates', { method: 'PUT', body: rates }),
   setPlans: (plans) => request('/settings/plans', { method: 'PUT', body: plans }),
+  setMaxVehicles: (max) => request('/settings/max-vehicles', { method: 'PUT', body: { max } }),
   setContent: (content) => request('/settings/content', { method: 'PUT', body: content }),
   broadcast: (message, numbers) => request('/broadcast', { method: 'POST', body: { message, numbers } }),
 };

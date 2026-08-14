@@ -7,6 +7,7 @@ export default function Settings() {
   const [err, setErr] = useState('');
   const [rates, setRates] = useState({ VAHAN: 0, ECHALLAN: 0, FASTAG: 0 });
   const [plans, setPlans] = useState({});
+  const [maxVehicles, setMaxVehicles] = useState(5);
   const [content, setContent] = useState({ benefits: [], why: [] });
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState('');
@@ -16,6 +17,7 @@ export default function Settings() {
     setRates({ VAHAN: 0, ECHALLAN: 0, FASTAG: 0, ...d.ulip_rates });
     const p = {}; d.plans.forEach((x) => { p[x.plan_code] = { amount: x.amount, comparable_price: x.comparable_price, validity_days: x.validity_days }; });
     setPlans(p);
+    setMaxVehicles(d.max_vehicles ?? 5);
     setContent({ benefits: d.content?.benefits || [], why: d.content?.why || [] });
   }).catch((e) => setErr(e.message));
   useEffect(() => { load(); }, []);
@@ -31,8 +33,11 @@ export default function Settings() {
   };
   const savePlans = async () => {
     setBusy('plans');
-    try { await api.setPlans(plans); flash('Pricing & validity saved.'); await load(); }
-    catch (e) { setErr(e.message); } finally { setBusy(''); }
+    try {
+      await api.setPlans(plans);
+      await api.setMaxVehicles(maxVehicles);
+      flash('Pricing, validity & cart limit saved.'); await load();
+    } catch (e) { setErr(e.message); } finally { setBusy(''); }
   };
   const setPlan = (code, k, v) => setPlans((p) => ({ ...p, [code]: { ...p[code], [k]: v } }));
 
@@ -67,6 +72,15 @@ export default function Settings() {
               </div>
             </div>
           ))}
+          <div className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-line p-4">
+            <div>
+              <div className="text-sm font-bold text-ink">Max vehicles per checkout</div>
+              <div className="text-xs text-muted">How many vehicles a customer can add to one payment.</div>
+            </div>
+            <input className="input !py-2 w-20 text-center text-sm" type="number" min="1" max="20"
+              value={maxVehicles} onChange={(e) => setMaxVehicles(e.target.value)} />
+          </div>
+
           <button className="btn-primary mt-5" disabled={busy === 'plans'} onClick={savePlans}>
             {busy === 'plans' ? 'Saving…' : 'Save pricing'}
           </button>
