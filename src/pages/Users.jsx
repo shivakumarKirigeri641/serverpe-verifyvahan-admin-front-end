@@ -10,7 +10,7 @@ export default function Users() {
 
   return (
     <>
-      <PageHead title="Users & vehicles" sub="Everyone who has messaged VerifyVahan."
+      <PageHead title="Users & vehicles" sub="Everyone who has messaged GaadiPe."
         right={
           <form onSubmit={(e) => { e.preventDefault(); setTerm(q.trim()); }} className="flex gap-2">
             <input className="input !py-2 w-48" placeholder="Search name / number" value={q} onChange={(e) => setQ(e.target.value)} />

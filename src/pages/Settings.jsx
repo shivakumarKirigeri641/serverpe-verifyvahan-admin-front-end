@@ -148,7 +148,7 @@ export default function Settings() {
 
           <div>
             <div className="mb-2 flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-muted">Why VerifyVahan</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-muted">Why GaadiPe</h3>
               <button className="text-xs font-bold text-brand" onClick={() => addRow('why', { title: '', body: '' })}>+ Add</button>
             </div>
             <div className="space-y-3">

@@ -1,5 +1,5 @@
 /**
- * The single door to the VerifyVahan admin API.
+ * The single door to the GaadiPe admin API.
  *
  * Every request carries the bearer token; a 401 clears the session so an
  * expired token can never leave the panel showing data it's no longer entitled

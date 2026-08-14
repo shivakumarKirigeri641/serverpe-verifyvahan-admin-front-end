@@ -28,7 +28,7 @@ export default function Broadcast() {
 
       <div className="max-w-2xl space-y-5">
         <div className="rounded-xl border border-warn/30 bg-warn/5 p-4 text-sm text-warn">
-          Free-form messages only reach users who messaged VerifyVahan in the last 24 hours.
+          Free-form messages only reach users who messaged GaadiPe in the last 24 hours.
           For everyone else, an approved template is required.
         </div>
 

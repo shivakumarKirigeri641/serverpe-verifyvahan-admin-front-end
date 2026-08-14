@@ -15,10 +15,11 @@ const NAV = [
 
 function Mark() {
   return (
-    <svg viewBox="0 0 64 64" className="h-8 w-8">
-      <defs><linearGradient id="m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#2563EB" /><stop offset="1" stopColor="#075E54" /></linearGradient></defs>
-      <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#m)" />
-      <path d="M20 33 L29 42 L45 23" fill="none" stroke="#00E0A4" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+    <svg viewBox="0 0 512 512" className="h-8 w-8">
+      <defs><linearGradient id="m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#0A9E8E" /><stop offset="1" stopColor="#075E54" /></linearGradient></defs>
+      <rect width="512" height="512" rx="116" fill="url(#m)" />
+      <text x="256" y="326" textAnchor="middle" fontFamily="Arial, Helvetica, sans-serif" fontWeight="900" fontSize="238" letterSpacing="-14"><tspan fill="#FFFFFF">G</tspan><tspan fill="#3BE8B0">P</tspan></text>
+      <path d="M122 388 L214 428 L400 346" fill="none" stroke="#3BE8B0" strokeWidth="28" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -47,7 +48,7 @@ export default function Layout({ page, setPage, onLogout, children }) {
       {/* sidebar (desktop) */}
       <aside className="hidden lg:flex flex-col border-r border-line bg-white p-4">
         <div className="flex items-center gap-2.5 px-1.5 py-2 font-extrabold text-ink">
-          <Mark /> Verify<span className="text-brand">Vahan</span>
+          <Mark /> Gaadi<span className="text-brand">Pe</span>
         </div>
         <div className="mt-6 flex-1"><NavList /></div>
         <button onClick={onLogout} className="btn-ghost mt-2 w-full text-sm">Sign out</button>
