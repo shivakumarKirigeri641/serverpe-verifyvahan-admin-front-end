@@ -1,27 +1,27 @@
 import { useState } from 'react';
 
 const NAV = [
-  ['dashboard', 'Dashboard', 'M4 13h6V4H4v9Zm0 7h6v-5H4v5Zm10 0h6V11h-6v9Zm0-16v5h6V4h-6Z'],
-  ['finance', 'Finance', 'M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6'],
-  ['gst', 'GST', 'M4 6h16v12H4zM4 10h16M9 14h6'],
-  ['tickets', 'Support tickets', 'M4 6h16v5a2 2 0 0 0 0 4v3H4v-3a2 2 0 0 0 0-4V6Z'],
-  ['inbox', 'Inbox', 'M4 5h16v14H4zM4 8l8 5 8-5'],
-  ['analytics', 'Analytics', 'M4 20V10M10 20V4M16 20v-7M22 20H2'],
-  ['reports', 'Reports', 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6'],
-  ['invoices', 'Invoices', 'M6 2h12v20l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6'],
-  ['users', 'Users', 'M16 11a4 4 0 1 0-8 0M4 21a8 8 0 0 1 16 0'],
-  ['logins', 'Logins', 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3'],
-  ['vehicles', 'Vehicles', 'M5 16l1-5h12l1 5M4 16h16v3H4zM7 19v2M17 19v2'],
-  ['visitors', 'Visitors', 'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z'],
-  ['broadcast', 'Broadcast', 'M4 11l16-7-4 16-4-6-4 2-1-3z'],
-  ['apihealth', 'API health', 'M3 12h4l2 6 4-14 3 10 1-2h4'],
-  ['legal', 'Legal & policies', 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h4'],
-  ['settings', 'Settings', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM4 12a8 8 0 0 1 .2-1.8L2 8l2-3.5 2.6 1a8 8 0 0 1 1.5-.9L9 2h6l.9 2.6c.5.2 1 .5 1.5.9l2.6-1L22 8l-2.2 2.2a8 8 0 0 1 0 3.6L22 16l-2 3.5-2.6-1a8 8 0 0 1-1.5.9L15 22H9l-.9-2.6a8 8 0 0 1-1.5-.9l-2.6 1L2 16l2.2-2.2A8 8 0 0 1 4 12Z'],
+  ['dashboard', 'Dashboard', '📊'],
+  ['finance', 'Finance', '💰'],
+  ['gst', 'GST', '📑'],
+  ['tickets', 'Support tickets', '🎫'],
+  ['inbox', 'Inbox', '📥'],
+  ['analytics', 'Analytics', '📈'],
+  ['reports', 'Reports', '📄'],
+  ['invoices', 'Invoices', '🧾'],
+  ['users', 'Users', '👤'],
+  ['logins', 'Logins', '🔑'],
+  ['vehicles', 'Vehicles', '🚗'],
+  ['visitors', 'Visitors', '🌐'],
+  ['broadcast', 'Broadcast', '📣'],
+  ['apihealth', 'API health', '🩺'],
+  ['legal', 'Legal & policies', '⚖️'],
+  ['settings', 'Settings', '⚙️'],
 ];
 
 function Mark() {
   return (
-    <svg viewBox="0 0 512 512" className="h-8 w-8">
+    <svg viewBox="0 0 512 512" className="h-10 w-10 rounded-xl bg-white p-1 shrink-0">
       <defs><linearGradient id="m" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#0A9E8E" /><stop offset="1" stopColor="#075E54" /></linearGradient></defs>
       <rect width="512" height="512" rx="116" fill="url(#m)" />
       <text x="256" y="326" textAnchor="middle" fontFamily="Arial, Helvetica, sans-serif" fontWeight="900" fontSize="238" letterSpacing="-14"><tspan fill="#FFFFFF">G</tspan><tspan fill="#3BE8B0">P</tspan></text>
@@ -33,56 +33,53 @@ function Mark() {
 export default function Layout({ page, setPage, onLogout, children }) {
   const [open, setOpen] = useState(false);
 
-  const NavList = ({ onNavigate }) => (
-    <nav className="space-y-1">
-      {NAV.map(([id, label, d]) => (
-        <button key={id}
-          onClick={() => { setPage(id); onNavigate?.(); }}
-          className={`flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition ${
-            page === id ? 'bg-brand text-white shadow-soft' : 'text-body hover:bg-panel'}`}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
-            <path d={d} />
-          </svg>
-          {label}
-        </button>
-      ))}
-    </nav>
-  );
-
   return (
-    <div className="min-h-screen lg:grid lg:grid-cols-[256px_1fr]">
-      {/* sidebar (desktop) */}
-      <aside className="hidden lg:flex flex-col border-r border-line bg-white p-4">
-        <div className="flex items-center gap-2.5 px-1.5 py-2">
+    <div className="flex min-h-screen">
+      {/* dimmed backdrop — mobile only */}
+      {open && <div className="fixed inset-0 z-30 bg-black/40 lg:hidden" onClick={() => setOpen(false)} aria-hidden />}
+
+      {/* sidebar */}
+      <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 transform flex-col bg-brand text-white/90 transition-transform duration-200
+        lg:sticky lg:top-0 lg:z-auto lg:h-screen lg:w-60 lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex items-center gap-3 border-b border-white/10 p-5">
+          <button onClick={() => setOpen(false)} aria-label="Close menu"
+            className="order-last ml-auto grid h-8 w-8 place-items-center rounded-lg hover:bg-white/10 lg:hidden">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18" /><line x1="18" y1="6" x2="6" y2="18" /></svg>
+          </button>
           <Mark />
-          <div className="leading-tight">
-            <div className="font-extrabold text-ink">Gaadi<span className="text-brand">Pe</span></div>
-            <div className="text-[10px] font-semibold uppercase tracking-wider text-muted">Admin console</div>
+          <div className="min-w-0">
+            <div className="font-bold leading-tight text-white">GaadiPe</div>
+            <div className="truncate text-[11px] text-white/60">Admin console</div>
           </div>
         </div>
-        <div className="mt-6 flex-1"><NavList /></div>
-        <button onClick={onLogout} className="btn-ghost mt-2 w-full text-sm">Sign out</button>
+
+        <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+          {NAV.map(([id, label, icon]) => (
+            <button key={id} onClick={() => { setPage(id); setOpen(false); }}
+              className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition ${
+                page === id ? 'bg-white/15 font-semibold text-white' : 'hover:bg-white/10'}`}>
+              <span className="w-5 text-center">{icon}</span>{label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="border-t border-white/10 p-4 text-[11px] text-white/50">
+          <div className="font-semibold text-white/70">ServerPe App Solutions</div>
+          <div>GSTIN 29BSMPK7696H1ZT</div>
+          <button onClick={onLogout} className="mt-3 w-full rounded-lg bg-white/10 py-2 text-xs font-semibold text-white transition hover:bg-white/20">Sign out</button>
+        </div>
       </aside>
 
       {/* main */}
-      <div className="flex min-h-screen flex-col">
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-line bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
-          <div className="flex items-center gap-2 font-extrabold text-ink"><Mark /> Admin</div>
-          <button className="p-2" onClick={() => setOpen((v) => !v)} aria-label="Menu">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
-            </svg>
+      <main className="min-w-0 flex-1">
+        <header className="sticky top-0 z-20 flex h-14 items-center gap-3 bg-brand px-4 text-white shadow-md lg:hidden">
+          <button onClick={() => setOpen(true)} aria-label="Open menu" className="-ml-1 grid h-9 w-9 place-items-center rounded-lg hover:bg-white/10">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="7" x2="20" y2="7" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="4" y1="17" x2="20" y2="17" /></svg>
           </button>
+          <span className="font-bold">GaadiPe</span>
         </header>
-        {open && (
-          <div className="border-b border-line bg-white p-3 lg:hidden">
-            <NavList onNavigate={() => setOpen(false)} />
-            <button onClick={onLogout} className="btn-ghost mt-2 w-full text-sm">Sign out</button>
-          </div>
-        )}
-
-        <main className="mx-auto w-full max-w-6xl flex-1 p-5 sm:p-7">{children}</main>
-      </div>
+        <div className="mx-auto max-w-[1600px] p-4 sm:p-6">{children}</div>
+      </main>
     </div>
   );
 }

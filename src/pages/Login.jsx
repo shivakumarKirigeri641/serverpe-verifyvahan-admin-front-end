@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { api, setToken } from '../lib/api';
+import { api, setToken, API_BASE } from '../lib/api';
+
+const LOGO = `${API_BASE}/images/logo-mark.svg`;   // served by the back-end
 
 export default function Login({ onAuthed }) {
   const [pin, setPin] = useState('');
@@ -19,13 +21,9 @@ export default function Login({ onAuthed }) {
   return (
     <div className="grid min-h-screen place-items-center bg-panel px-5">
       <form onSubmit={submit} className="card w-full max-w-sm p-8">
-        <div className="flex items-center gap-2.5 font-extrabold text-ink text-lg">
-          <svg viewBox="0 0 64 64" className="h-9 w-9">
-            <defs><linearGradient id="l" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#2563EB" /><stop offset="1" stopColor="#075E54" /></linearGradient></defs>
-            <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#l)" />
-            <path d="M20 33 L29 42 L45 23" fill="none" stroke="#00E0A4" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Verify<span className="text-brand">Vahan</span>
+        <div className="flex items-center gap-2.5 text-lg font-extrabold text-ink">
+          <img src={LOGO} alt="GaadiPe" className="h-9 w-9 rounded-lg" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          Gaadi<span className="text-brand">Pe</span>
         </div>
         <h1 className="mt-6 text-xl font-bold text-ink">Admin sign in</h1>
         <p className="mt-1 text-sm text-muted">Enter your admin PIN to continue.</p>

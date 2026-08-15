@@ -49,7 +49,7 @@ function DeclarationTexts({ initial }) {
           </div>
         ))}
       </div>
-      <button className="btn mt-5" disabled={!dirty || busy} onClick={save}>{busy ? 'Saving…' : 'Save texts'}</button>
+      <button className="btn-primary mt-5" disabled={!dirty || busy} onClick={save}>{busy ? 'Saving…' : 'Save texts'}</button>
     </div>
   );
 }
@@ -103,7 +103,7 @@ function Clause({ pkey, clause, onChange }) {
       </div>
       <textarea className="input mt-2 min-h-[90px] w-full resize-y text-sm" value={desc} onChange={(e) => setDesc(e.target.value)} />
       <div className="mt-2 flex items-center gap-3">
-        <button className="btn text-xs" disabled={!dirty || busy} onClick={save}>{busy ? 'Saving…' : 'Save clause'}</button>
+        <button className="btn-primary text-xs" disabled={!dirty || busy} onClick={save}>{busy ? 'Saving…' : 'Save clause'}</button>
         <span className="text-[11px] text-muted">v{clause.version} · order {clause.display_order}</span>
       </div>
     </div>
@@ -126,7 +126,7 @@ function AddClause({ pkey, onChange }) {
       <input className="input w-full font-bold" placeholder="Clause title" value={title} onChange={(e) => setTitle(e.target.value)} />
       <textarea className="input mt-2 min-h-[90px] w-full resize-y text-sm" placeholder="Clause text" value={desc} onChange={(e) => setDesc(e.target.value)} />
       <div className="mt-2 flex gap-2">
-        <button className="btn text-xs" disabled={busy || !title.trim() || desc.trim().length < 5} onClick={add}>{busy ? 'Adding…' : 'Add'}</button>
+        <button className="btn-primary text-xs" disabled={busy || !title.trim() || desc.trim().length < 5} onClick={add}>{busy ? 'Adding…' : 'Add'}</button>
         <button className="btn-ghost text-xs" onClick={() => setOpen(false)}>Cancel</button>
       </div>
     </div>
