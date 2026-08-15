@@ -14,6 +14,7 @@ import Broadcast from './pages/Broadcast.jsx';
 import Analytics from './pages/Analytics.jsx';
 import Reports from './pages/Reports.jsx';
 import Invoices from './pages/Invoices.jsx';
+import Logins from './pages/Logins.jsx';
 import ApiHealth from './pages/ApiHealth.jsx';
 import Settings from './pages/Settings.jsx';
 import Toaster from './components/Toaster.jsx';
@@ -21,7 +22,7 @@ import Toaster from './components/Toaster.jsx';
 const PAGES = {
   dashboard: Dashboard, finance: Finance, gst: Gst, tickets: Tickets, inbox: Inbox, users: Users,
   vehicles: Vehicles, visitors: Visitors, analytics: Analytics, reports: Reports, invoices: Invoices,
-  broadcast: Broadcast, apihealth: ApiHealth, settings: Settings,
+  logins: Logins, broadcast: Broadcast, apihealth: ApiHealth, settings: Settings,
 };
 
 export default function App() {

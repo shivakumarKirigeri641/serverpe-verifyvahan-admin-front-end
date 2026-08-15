@@ -10,6 +10,7 @@ const NAV = [
   ['reports', 'Reports', 'M6 2h9l5 5v15H6zM14 2v6h6M9 13h6M9 17h6'],
   ['invoices', 'Invoices', 'M6 2h12v20l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6'],
   ['users', 'Users', 'M16 11a4 4 0 1 0-8 0M4 21a8 8 0 0 1 16 0'],
+  ['logins', 'Logins', 'M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3'],
   ['vehicles', 'Vehicles', 'M5 16l1-5h12l1 5M4 16h16v3H4zM7 19v2M17 19v2'],
   ['visitors', 'Visitors', 'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z'],
   ['broadcast', 'Broadcast', 'M4 11l16-7-4 16-4-6-4 2-1-3z'],

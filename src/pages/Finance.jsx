@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { api, inr, dt } from '../lib/api';
+import { api, inr, dt, openInvoicePdf, openReportPdf } from '../lib/api';
 import { useAsync, Spinner, ErrorBox, PageHead, StatCard, Table, Badge, Empty } from '../components/ui.jsx';
+import { toast } from '../components/Toaster.jsx';
 
 const FILTERS = [['', 'All'], ['captured', 'Captured'], ['created', 'Pending'], ['failed', 'Failed']];
 
@@ -81,6 +82,7 @@ const Row = ({ label, value, minus }) => (
 
 function Payments() {
   const [status, setStatus] = useState('');
+  const [openId, setOpenId] = useState(null);
   const { data, loading, error, reload } = useAsync(() => api.payments({ status, limit: 100 }), [status]);
   return (
     <>
@@ -92,9 +94,9 @@ function Payments() {
       </div>
       {loading ? <Spinner /> : error ? <ErrorBox message={error} onRetry={reload} />
         : data.payments.length === 0 ? <Empty>No payments in this view.</Empty> : (
-        <Table cols={['Customer', 'Amount', 'Method', 'Status', 'Invoice', 'Payment ID', 'When']}>
+        <Table cols={['Customer', 'Amount', 'Method', 'Status', 'Invoice', 'Payment ID', 'When', '']}>
           {data.payments.map((p) => (
-            <tr key={p.id}>
+            <tr key={p.id} className="cursor-pointer hover:bg-brand/5" onClick={() => setOpenId(p.id)}>
               <td className="td font-semibold text-ink">{p.full_name || p.profile_name || p.wa_id || '—'}</td>
               <td className="td font-bold">{inr(p.amount)}</td>
               <td className="td uppercase">{p.method || '—'}</td>
@@ -102,10 +104,99 @@ function Payments() {
               <td className="td font-mono text-xs">{p.invoice_number || '—'}</td>
               <td className="td font-mono text-xs text-muted">{p.razorpay_payment_id || '—'}</td>
               <td className="td text-muted">{dt(p.paid_at || p.created_at)}</td>
+              <td className="td text-brand text-xs font-bold">View ›</td>
             </tr>
           ))}
         </Table>
       )}
+      {openId && <PaymentDrawer id={openId} onClose={() => setOpenId(null)} />}
     </>
   );
 }
+
+function PaymentDrawer({ id, onClose }) {
+  const { data, loading, error, reload } = useAsync(() => api.paymentDetail(id), [id]);
+  const p = data?.payment;
+  const dl = (fn, arg) => async (e) => { e.stopPropagation(); try { await fn(arg); } catch (err) { toast(err.message, 'error'); } };
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end bg-black/40" onClick={onClose}>
+      <div className="h-full w-full max-w-md overflow-y-auto bg-cream p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-black text-ink">Payment detail</h3>
+          <button className="text-muted hover:text-ink" onClick={onClose}>✕</button>
+        </div>
+
+        {loading ? <Spinner /> : error ? <ErrorBox message={error} onRetry={reload} /> : p && (
+          <div className="mt-4 space-y-4">
+            <div className="card p-4 text-center">
+              <div className="text-3xl font-black text-brand">{inr(p.amount)}</div>
+              <div className="mt-1"><Badge value={p.status} /> {p.channel && <span className="ml-1 rounded-full bg-line px-2 py-0.5 text-[10px] font-bold uppercase text-muted">{p.channel}</span>}</div>
+            </div>
+
+            <Section title="Customer">
+              <KV k="Name" v={p.customer_name} />
+              <KV k="Mobile" v={p.wa_id} />
+              <KV k="Contact" v={p.contact} />
+              <KV k="Email" v={p.email} />
+              <KV k="State" v={p.state_name || p.place_of_supply} />
+            </Section>
+
+            <Section title="Gateway">
+              <KV k="Method" v={(p.method || '—').toUpperCase()} />
+              <KV k="Order ID" v={p.razorpay_order_id} mono />
+              <KV k="Payment ID" v={p.razorpay_payment_id} mono />
+              <KV k="Created" v={dt(p.created_at)} />
+              <KV k="Paid" v={p.paid_at ? dt(p.paid_at) : '—'} />
+            </Section>
+
+            <Section title={`Vehicles (${p.items?.length || p.reports?.length || 0})`}>
+              {(p.items?.length ? p.items : p.reports).map((it, i) => (
+                <div key={i} className="flex items-center justify-between border-t border-line py-1.5 first:border-0">
+                  <span className="font-semibold text-ink">{it.reg_no}</span>
+                  {it.amount != null && <span className="text-muted">{inr(it.amount)}</span>}
+                </div>
+              ))}
+            </Section>
+
+            {p.invoice_id && (
+              <Section title={`GST invoice · ${p.invoice_number || ''}`}>
+                <KV k="Taxable" v={inr(p.taxable_amount)} />
+                {p.is_interstate
+                  ? <KV k="IGST" v={inr(p.igst_amount)} />
+                  : <><KV k="CGST" v={inr(p.cgst_amount)} /><KV k="SGST" v={inr(p.sgst_amount)} /></>}
+                <KV k="Total" v={inr(p.gross_amount)} bold />
+                <button className="btn-ghost mt-2 w-full text-xs" onClick={dl(openInvoicePdf, p.invoice_id)}>Download invoice</button>
+              </Section>
+            )}
+
+            {p.reports?.length > 0 && (
+              <Section title="Reports">
+                {p.reports.map((r) => (
+                  <button key={r.id} className="flex w-full items-center justify-between border-t border-line py-1.5 text-left first:border-0 hover:text-brand"
+                    onClick={dl(openReportPdf, r.id)}>
+                    <span><span className="font-semibold text-ink">{r.reg_no}</span> <span className="text-xs text-muted">{r.report_number}</span></span>
+                    <span className="text-xs font-bold text-brand">PDF ↓</span>
+                  </button>
+                ))}
+              </Section>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const Section = ({ title, children }) => (
+  <div className="card p-4">
+    <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-muted">{title}</div>
+    <div className="space-y-1 text-sm">{children}</div>
+  </div>
+);
+const KV = ({ k, v, mono, bold }) => (
+  <div className="flex items-start justify-between gap-3">
+    <span className="text-muted">{k}</span>
+    <span className={`text-right ${mono ? 'font-mono text-xs' : ''} ${bold ? 'font-bold text-brand' : 'text-ink'}`}>{v || '—'}</span>
+  </div>
+);
