@@ -67,6 +67,8 @@ export const api = {
   users: (o) => request(`/users${qs(o)}`),
   user: (id) => request(`/users/${id}`),
   reports: (o) => request(`/reports${qs(o)}`),
+  invoices: (o) => request(`/invoices${qs(o)}`),
+  analytics: () => request('/analytics'),
   vehicles: (o) => request(`/vehicles${qs(o)}`),
   vehicle: (id) => request(`/vehicles/${id}`),
   inbox: () => request('/inbox'),
@@ -93,6 +95,18 @@ export async function openReportPdf(id) {
   });
   if (res.status === 401) { clearToken(); onUnauthorized(); throw new Error('Session expired.'); }
   if (!res.ok) throw new Error('Could not load the report PDF.');
+  const url = URL.createObjectURL(await res.blob());
+  window.open(url, '_blank');
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+/* Same pattern for a stored invoice PDF. */
+export async function openInvoicePdf(id) {
+  const res = await fetch(`${API_BASE}/admin/api/invoices/${id}/pdf`, {
+    headers: { Authorization: `Bearer ${getToken()}` },
+  });
+  if (res.status === 401) { clearToken(); onUnauthorized(); throw new Error('Session expired.'); }
+  if (!res.ok) throw new Error("Invoice PDF isn't available for this one.");
   const url = URL.createObjectURL(await res.blob());
   window.open(url, '_blank');
   setTimeout(() => URL.revokeObjectURL(url), 60000);
