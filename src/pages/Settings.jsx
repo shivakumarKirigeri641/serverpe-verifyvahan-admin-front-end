@@ -19,7 +19,7 @@ export default function Settings() {
   const load = () => api.settings().then((d) => {
     setData(d);
     setRates({ VAHAN: 0, ECHALLAN: 0, FASTAG: 0, ...d.ulip_rates });
-    const p = {}; d.plans.forEach((x) => { p[x.plan_code] = { amount: x.amount, comparable_price: x.comparable_price, validity_days: x.validity_days }; });
+    const p = {}; d.plans.forEach((x) => { p[x.plan_code] = { amount: x.amount, comparable_price: x.comparable_price, validity_days: x.validity_days, refresh_amount: x.refresh_amount, refresh_window_days: x.refresh_window_days }; });
     setPlans(p);
     setMaxVehicles(d.max_vehicles ?? 5);
     setContent({ benefits: d.content?.benefits || [], why: d.content?.why || [] });
@@ -82,8 +82,13 @@ export default function Settings() {
               <div className="mt-3 grid grid-cols-3 gap-3">
                 <Num label="Price ₹" value={plans[code]?.amount} onChange={(v) => setPlan(code, 'amount', v)} />
                 <Num label="Worth ₹" value={plans[code]?.comparable_price} onChange={(v) => setPlan(code, 'comparable_price', v)} />
-                <Num label="Valid (days)" value={plans[code]?.validity_days} onChange={(v) => setPlan(code, 'validity_days', v)} />
+                <Num label="Fresh after (days)" value={plans[code]?.validity_days} onChange={(v) => setPlan(code, 'validity_days', v)} />
+                <Num label="Refresh ₹" value={plans[code]?.refresh_amount} onChange={(v) => setPlan(code, 'refresh_amount', v)} />
+                <Num label="Refresh window (days)" value={plans[code]?.refresh_window_days} onChange={(v) => setPlan(code, 'refresh_window_days', v)} />
               </div>
+              <p className="mt-2 text-[11px] text-muted">
+                Data is “fresh” for <b>{plans[code]?.validity_days || 7}</b> days. A re-pull within <b>{plans[code]?.refresh_window_days || 90}</b> days costs the refresh price <b>₹{plans[code]?.refresh_amount ?? '—'}</b>; after that, full price. Reports stay downloadable forever.
+              </p>
             </div>
           ))}
           <div className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-line p-4">
