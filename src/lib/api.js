@@ -73,6 +73,7 @@ export const api = {
   deleteClause: (key, id) => request(`/legal/${key}/clause/${id}`, { method: 'DELETE' }),
   tickets: (o) => request(`/tickets${qs(o)}`),
   setTicketStatus: (id, status) => request(`/tickets/${id}`, { method: 'PATCH', body: { status } }),
+  replyTicket: (id, body) => request(`/tickets/${id}/reply`, { method: 'POST', body }),
   users: (o) => request(`/users${qs(o)}`),
   user: (id) => request(`/users/${id}`),
   reports: (o) => request(`/reports${qs(o)}`),
