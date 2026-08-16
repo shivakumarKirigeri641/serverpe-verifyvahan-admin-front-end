@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 const NAV = [
   ['dashboard', 'Dashboard', '📊'],
+  ['lookup', 'Vehicle lookup', '🔍'],
   ['finance', 'Finance', '💰'],
   ['gst', 'GST', '📑'],
   ['tickets', 'Support tickets', '🎫'],

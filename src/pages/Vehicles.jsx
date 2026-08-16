@@ -1,12 +1,23 @@
 import { useState } from 'react';
 import { api, dt, day } from '../lib/api';
 import { useAsync, Spinner, ErrorBox, PageHead, Table, Badge, Empty } from '../components/ui.jsx';
+import { freshness, TONE } from '../lib/freshness';
+
+// Data-age pill for a cached plate — based on the last FULL (paid) pull.
+function AgeTag({ lastFullISO, windowDays }) {
+  if (!lastFullISO) return <span className="chip bg-line text-body" title="No paid pull yet — basic cache only">No paid pull</span>;
+  const f = freshness(lastFullISO, { windowDays });
+  return <span className={`chip border ${TONE[f.tone]}`} title={f.note}>{f.label}</span>;
+}
 
 export default function Vehicles() {
   const [q, setQ] = useState('');
   const [term, setTerm] = useState('');
   const [openId, setOpenId] = useState(null);
   const { data, loading, error, reload } = useAsync(() => api.vehicles({ q: term, limit: 100 }), [term]);
+  const cfg = useAsync(() => api.settings(), []);
+  const p4 = (cfg.data?.plans || []).find((x) => x.plan_code === 'PREMIUM_4W') || {};
+  const windowDays = Number(p4.refresh_window_days) || 90;
 
   return (
     <>
@@ -20,12 +31,13 @@ export default function Vehicles() {
 
       {loading ? <Spinner /> : error ? <ErrorBox message={error} onRetry={reload} />
         : data.vehicles.length === 0 ? <Empty>No vehicles cached yet.</Empty> : (
-        <Table cols={['Plate', 'Make / model', 'Class', 'Accessors', 'Full reports', 'Challans', 'Tolls', '']}>
+        <Table cols={['Plate', 'Make / model', 'Class', 'Data age', 'Accessors', 'Full reports', 'Challans', 'Tolls', '']}>
           {data.vehicles.map((v) => (
             <tr key={v.id}>
               <td className="td font-bold text-ink">{v.reg_no}</td>
               <td className="td">{[v.vehicle_manufacturer_name, v.model].filter(Boolean).join(' · ') || '—'}</td>
               <td className="td whitespace-nowrap">{v.vehicle_class || '—'}</td>
+              <td className="td whitespace-nowrap"><AgeTag lastFullISO={v.last_full_at} windowDays={windowDays} /></td>
               <td className="td font-semibold">{v.accessors}</td>
               <td className="td font-bold text-brand">{v.full_reports}</td>
               <td className="td">{v.challans}</td>

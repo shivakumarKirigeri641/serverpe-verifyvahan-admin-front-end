@@ -92,9 +92,12 @@ export const api = {
   setPlans: (plans) => request('/settings/plans', { method: 'PUT', body: plans }),
   planHistory: () => request('/settings/plan-history'),
   setMaxVehicles: (max) => request('/settings/max-vehicles', { method: 'PUT', body: { max } }),
+  setInternalNumbers: (numbers) => request('/settings/internal-numbers', { method: 'PUT', body: { numbers } }),
   setContent: (content) => request('/settings/content', { method: 'PUT', body: content }),
   broadcast: (message, numbers) => request('/broadcast', { method: 'POST', body: { message, numbers } }),
   resetTestData: (confirm) => request('/maintenance/reset-test-data', { method: 'POST', body: { confirm } }),
+  lookup: (body) => request('/lookup', { method: 'POST', body }),
+  lookups: (o) => request(`/lookups${qs(o)}`),
 };
 
 /* The PDF endpoint needs the bearer token, so a plain link won't do — fetch it
@@ -105,6 +108,18 @@ export async function openReportPdf(id) {
   });
   if (res.status === 401) { clearToken(); onUnauthorized(); throw new Error('Session expired.'); }
   if (!res.ok) throw new Error('Could not load the report PDF.');
+  const url = URL.createObjectURL(await res.blob());
+  window.open(url, '_blank');
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+/* Admin lookup — full-report PDF built on the fly for a looked-up plate. */
+export async function openLookupPdf(rcId) {
+  const res = await fetch(`${API_BASE}/admin/api/lookup/${rcId}/pdf`, {
+    headers: { Authorization: `Bearer ${getToken()}` },
+  });
+  if (res.status === 401) { clearToken(); onUnauthorized(); throw new Error('Session expired.'); }
+  if (!res.ok) throw new Error('Could not build the report PDF.');
   const url = URL.createObjectURL(await res.blob());
   window.open(url, '_blank');
   setTimeout(() => URL.revokeObjectURL(url), 60000);

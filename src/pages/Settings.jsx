@@ -8,6 +8,7 @@ export default function Settings() {
   const [rates, setRates] = useState({ VAHAN: 0, ECHALLAN: 0, FASTAG: 0 });
   const [plans, setPlans] = useState({});
   const [maxVehicles, setMaxVehicles] = useState(5);
+  const [internalNums, setInternalNums] = useState('');
   const [content, setContent] = useState({ benefits: [], why: [] });
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState('');
@@ -22,6 +23,7 @@ export default function Settings() {
     const p = {}; d.plans.forEach((x) => { p[x.plan_code] = { amount: x.amount, comparable_price: x.comparable_price, validity_days: x.validity_days, refresh_amount: x.refresh_amount, refresh_window_days: x.refresh_window_days }; });
     setPlans(p);
     setMaxVehicles(d.max_vehicles ?? 5);
+    setInternalNums((d.internal_numbers || []).join(', '));
     setContent({ benefits: d.content?.benefits || [], why: d.content?.why || [] });
   }).catch((e) => setErr(e.message));
   useEffect(() => { load(); }, []);
@@ -44,6 +46,16 @@ export default function Settings() {
     } catch (e) { setErr(e.message); } finally { setBusy(''); }
   };
   const setPlan = (code, k, v) => setPlans((p) => ({ ...p, [code]: { ...p[code], [k]: v } }));
+
+  const saveInternal = async () => {
+    setBusy('internal');
+    try {
+      const nums = internalNums.split(/[\s,;]+/).map((s) => s.replace(/\D/g, '')).filter((s) => s.length >= 10).map((s) => s.slice(-10));
+      const saved = await api.setInternalNumbers(nums);
+      setInternalNums((saved.internal_numbers || []).join(', '));
+      flash('Internal numbers saved — their activity is excluded from analytics.');
+    } catch (e) { setErr(e.message); } finally { setBusy(''); }
+  };
 
   const saveContent = async () => {
     setBusy('content');
@@ -129,6 +141,27 @@ export default function Settings() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Internal / test numbers */}
+        <div className="card p-6">
+          <h2 className="font-bold text-ink">Internal / test numbers</h2>
+          <p className="mt-1 text-sm text-muted">
+            Your own and test mobile numbers. Any activity from these — logins, vehicle checks, reports, payments —
+            is kept <b>out of</b> all customer analytics, dashboards and trackings.
+          </p>
+          <label className="mt-4 block text-[11px] font-bold uppercase tracking-wider text-muted">Mobile numbers</label>
+          <textarea
+            className="input mt-1 h-24 w-full font-mono text-sm"
+            placeholder="9886122415, 98765 43210"
+            value={internalNums}
+            onChange={(e) => setInternalNums(e.target.value)} />
+          <p className="mt-1.5 text-[11px] text-muted">
+            Separate with commas, spaces or new lines. We match the last 10 digits, so country codes are fine.
+          </p>
+          <button className="btn-primary mt-4" disabled={busy === 'internal'} onClick={saveInternal}>
+            {busy === 'internal' ? 'Saving…' : 'Save & re-sync'}
+          </button>
         </div>
 
         {/* ULIP rates */}

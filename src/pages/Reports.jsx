@@ -2,14 +2,27 @@ import { useState } from 'react';
 import { api, openReportPdf, dt } from '../lib/api';
 import { useAsync, Spinner, ErrorBox, PageHead, Table, Empty } from '../components/ui.jsx';
 import { toast } from '../components/Toaster.jsx';
+import { freshness, TONE } from '../lib/freshness';
 
 const within = (d, days) => Date.now() - new Date(d).getTime() <= days * 864e5;
+
+// Freshness/age pill — shared look with the user dashboard.
+function FreshTag({ genISO, validUpto, windowDays }) {
+  const f = freshness(genISO, { validUpto, windowDays });
+  if (!f) return <span className="text-muted">—</span>;
+  return (
+    <span className={`chip border ${TONE[f.tone]}`} title={f.note}>{f.label}</span>
+  );
+}
 
 export default function Reports() {
   const [type, setType] = useState('');
   const [q, setQ] = useState('');
   const [range, setRange] = useState('all');
   const { data, loading, error, reload } = useAsync(() => api.reports({ type: type || undefined, limit: 300 }), [type]);
+  const cfg = useAsync(() => api.settings(), []);
+  const p4 = (cfg.data?.plans || []).find((x) => x.plan_code === 'PREMIUM_4W') || {};
+  const windowDays = Number(p4.refresh_window_days) || 90;
 
   const rows = (data?.reports || []).filter((r) => {
     const s = q.trim().toLowerCase();
@@ -44,7 +57,7 @@ export default function Reports() {
 
       {loading ? <Spinner /> : error ? <ErrorBox message={error} onRetry={reload} />
         : rows.length === 0 ? <Empty>No reports match.</Empty> : (
-          <Table cols={['Report no', 'Vehicle', 'Type', 'Status', 'Generated', 'Valid until', '']}>
+          <Table cols={['Report no', 'Vehicle', 'Type', 'Data freshness', 'Status', 'Generated', 'Valid until', '']}>
             {rows.map((r) => (
               <tr key={r.id}>
                 <td className="td font-semibold text-ink">{r.report_number}</td>
@@ -53,6 +66,9 @@ export default function Reports() {
                   <span className={`chip ${r.report_type === 'FULL' ? 'bg-brand/10 text-brand' : 'bg-line text-body'}`}>
                     {r.report_type === 'FULL' ? 'Paid' : 'Basic'}
                   </span>
+                </td>
+                <td className="td">
+                  <FreshTag genISO={r.generated_at} validUpto={r.valid_upto} windowDays={windowDays} />
                 </td>
                 <td className="td text-muted">{r.status || '—'}</td>
                 <td className="td text-muted">{dt(r.generated_at)}</td>
