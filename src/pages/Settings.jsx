@@ -189,7 +189,7 @@ export default function Settings() {
           <label className="mt-4 block text-[11px] font-bold uppercase tracking-wider text-muted">Mobile numbers</label>
           <textarea
             className="input mt-1 h-24 w-full font-mono text-sm"
-            placeholder="9886122415, 98765 43210"
+            placeholder="9876543210, 9812345678"
             value={internalNums}
             onChange={(e) => setInternalNums(e.target.value)} />
           <p className="mt-1.5 text-[11px] text-muted">

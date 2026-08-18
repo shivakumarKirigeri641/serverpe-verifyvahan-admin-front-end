@@ -43,7 +43,7 @@ export default function Broadcast() {
           {mode === 'specific' && (
             <div className="mt-4">
               <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-muted">Numbers</label>
-              <textarea className="input min-h-[90px]" placeholder="One per line or comma-separated (e.g. 9886122415)"
+              <textarea className="input min-h-[90px]" placeholder="One per line or comma-separated (e.g. 9876543210)"
                 value={numbers} onChange={(e) => setNumbers(e.target.value)} />
               <div className="mt-1 text-xs text-muted">{parsed.length} valid number(s)</div>
             </div>
