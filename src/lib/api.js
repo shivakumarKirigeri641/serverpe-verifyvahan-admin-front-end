@@ -99,6 +99,11 @@ export const api = {
   resetTestData: (confirm) => request('/maintenance/reset-test-data', { method: 'POST', body: { confirm } }),
   lookup: (body) => request('/lookup', { method: 'POST', body }),
   lookups: (o) => request(`/lookups${qs(o)}`),
+  fleetQuote: (body) => request('/fleet/quote', { method: 'POST', body }),
+  fleetOrder: (body) => request('/fleet/order', { method: 'POST', body }),
+  fleetList: (o) => request(`/fleet${qs(o)}`),
+  fleetGet: (id) => request(`/fleet/${id}`),
+  fleetSync: (id) => request(`/fleet/${id}/sync`, { method: 'POST' }),
 };
 
 /* The PDF endpoint needs the bearer token, so a plain link won't do — fetch it

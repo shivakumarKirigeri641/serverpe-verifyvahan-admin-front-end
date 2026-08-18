@@ -19,13 +19,14 @@ import Legal from './pages/Legal.jsx';
 import ApiHealth from './pages/ApiHealth.jsx';
 import Settings from './pages/Settings.jsx';
 import Lookup from './pages/Lookup.jsx';
+import Fleet from './pages/Fleet.jsx';
 import Toaster from './components/Toaster.jsx';
 
 const PAGES = {
   dashboard: Dashboard, finance: Finance, gst: Gst, tickets: Tickets, inbox: Inbox, users: Users,
   vehicles: Vehicles, visitors: Visitors, analytics: Analytics, reports: Reports, invoices: Invoices,
   logins: Logins, legal: Legal, broadcast: Broadcast, apihealth: ApiHealth, settings: Settings,
-  lookup: Lookup,
+  lookup: Lookup, fleet: Fleet,
 };
 
 export default function App() {
