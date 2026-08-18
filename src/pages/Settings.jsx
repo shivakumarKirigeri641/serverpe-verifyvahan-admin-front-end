@@ -8,6 +8,8 @@ export default function Settings() {
   const [rates, setRates] = useState({ VAHAN: 0, ECHALLAN: 0, FASTAG: 0 });
   const [plans, setPlans] = useState({});
   const [maxVehicles, setMaxVehicles] = useState(5);
+  const [launchCap, setLaunchCap] = useState(50);
+  const [launchTaken, setLaunchTaken] = useState(0);
   const [internalNums, setInternalNums] = useState('');
   const [content, setContent] = useState({ benefits: [], why: [] });
   const [msg, setMsg] = useState('');
@@ -23,6 +25,8 @@ export default function Settings() {
     const p = {}; d.plans.forEach((x) => { p[x.plan_code] = { amount: x.amount, comparable_price: x.comparable_price, validity_days: x.validity_days, refresh_amount: x.refresh_amount, refresh_window_days: x.refresh_window_days }; });
     setPlans(p);
     setMaxVehicles(d.max_vehicles ?? 5);
+    setLaunchCap(d.launch_offer?.cap ?? 50);
+    setLaunchTaken(d.launch_offer?.taken ?? 0);
     setInternalNums((d.internal_numbers || []).join(', '));
     setContent({ benefits: d.content?.benefits || [], why: d.content?.why || [] });
   }).catch((e) => setErr(e.message));
@@ -46,6 +50,16 @@ export default function Settings() {
     } catch (e) { setErr(e.message); } finally { setBusy(''); }
   };
   const setPlan = (code, k, v) => setPlans((p) => ({ ...p, [code]: { ...p[code], [k]: v } }));
+
+  const saveLaunch = async () => {
+    setBusy('launch');
+    try {
+      const r = await api.setLaunchCap(Number(launchCap) || 0);
+      setLaunchCap(r.launch_offer?.cap ?? launchCap);
+      setLaunchTaken(r.launch_offer?.taken ?? launchTaken);
+      flash('Launch offer cap saved — pricing updates instantly.');
+    } catch (e) { setErr(e.message); } finally { setBusy(''); }
+  };
 
   const saveInternal = async () => {
     setBusy('internal');
@@ -141,6 +155,28 @@ export default function Settings() {
               </div>
             </div>
           )}
+        </div>
+
+        {/* Launch offer */}
+        <div className="card p-6">
+          <h2 className="font-bold text-ink">Launch offer</h2>
+          <p className="mt-1 text-sm text-muted">
+            The first <b>{launchCap}</b> paid vehicles get the <b>launch price</b> (your “Price ₹” above).
+            After that, everyone pays the <b>regular price</b> (your “Worth ₹”). Set to <b>0</b> to end the offer now.
+          </p>
+          <div className="mt-4 flex items-end gap-4">
+            <div className="w-40"><Num label="First N vehicles" value={launchCap} onChange={setLaunchCap} /></div>
+            <div className="pb-2 text-sm">
+              <span className="font-bold text-brand">{launchTaken}</span>
+              <span className="text-muted"> used · </span>
+              <span className="font-bold text-ok">{Math.max(0, launchCap - launchTaken)}</span>
+              <span className="text-muted"> left at launch price</span>
+            </div>
+          </div>
+          <p className="mt-2 text-[11px] text-muted">Counts real customers only — your internal/test numbers don’t use up the offer.</p>
+          <button className="btn-primary mt-4" disabled={busy === 'launch'} onClick={saveLaunch}>
+            {busy === 'launch' ? 'Saving…' : 'Save launch offer'}
+          </button>
         </div>
 
         {/* Internal / test numbers */}

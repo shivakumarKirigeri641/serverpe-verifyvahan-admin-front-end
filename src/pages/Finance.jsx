@@ -1,7 +1,15 @@
 import { useState } from 'react';
 import { api, inr, dt, openInvoicePdf, openReportPdf } from '../lib/api';
-import { useAsync, Spinner, ErrorBox, PageHead, StatCard, Table, Badge, Empty } from '../components/ui.jsx';
+import { useAsync, Spinner, ErrorBox, PageHead, Table, Badge, Empty } from '../components/ui.jsx';
+import { KpiTile, Donut, Panel } from '../components/charts.jsx';
 import { toast } from '../components/Toaster.jsx';
+
+const inrK = (n) => {
+  const v = Number(n) || 0;
+  if (v >= 1e5) return '₹' + (v / 1e5).toFixed(1) + 'L';
+  if (v >= 1e3) return '₹' + (v / 1e3).toFixed(1) + 'k';
+  return '₹' + v.toFixed(0);
+};
 
 const FILTERS = [['', 'All'], ['captured', 'Captured'], ['created', 'Pending'], ['failed', 'Failed']];
 
@@ -33,42 +41,60 @@ function Money() {
   return (
     <>
       <div className="grid gap-4 lg:grid-cols-3">
-        <StatCard label="Collected" value={inr(d.collected)} sub={`${d.payments} payments · GST inclusive`} accent="text-brand" />
-        <StatCard label="Costs & GST set aside" value={inr(d.output_gst + d.ulip_cost + d.gateway_fees)} sub={`GST ${inr(d.output_gst)} · ULIP ${inr(d.ulip_cost)} · fees ${inr(d.gateway_fees)}`} accent="text-warn" />
-        <StatCard label="Withdrawable (drawable)" value={inr(d.withdrawable)} sub="Yours to draw, safely" accent={neg ? 'text-bad' : 'text-ok'} />
+        <KpiTile label="Collected" value={inr(d.collected)} sub={`${d.payments} payments · GST inclusive`} tone="text-brand" />
+        <KpiTile label="Costs & GST set aside" value={inr(d.output_gst + d.ulip_cost + d.gateway_fees)} sub={`GST ${inr(d.output_gst)} · ULIP ${inr(d.ulip_cost)} · fees ${inr(d.gateway_fees)}`} tone="text-warn" />
+        <KpiTile label="Withdrawable" value={inr(d.withdrawable)} sub="Yours to draw, safely" tone={neg ? 'text-bad' : 'text-ok'} />
       </div>
 
-      {/* the walk-down */}
-      <div className="mt-6 card p-6 max-w-md">
-        <h3 className="text-sm font-bold text-ink">Turnover → withdrawable</h3>
-        <div className="mt-4 space-y-2 text-sm">
-          <Row label="Collected" value={d.collected} />
-          <Row label="GST set aside" value={d.output_gst} minus />
-          <Row label="ULIP API cost" value={d.ulip_cost} minus />
-          <Row label="Gateway fees" value={d.gateway_fees} minus />
-          <div className="!mt-3 flex items-center justify-between border-t border-line pt-3 font-bold">
-            <span className={neg ? 'text-bad' : 'text-brand'}>Withdrawable</span>
-            <span className={`tabular-nums ${neg ? 'text-bad' : 'text-brand'}`}>{inr(d.withdrawable)}</span>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        {/* where the collected money splits */}
+        <Panel title="Where your turnover goes" sub="Collected, split into what's yours vs. set aside">
+          <Donut centerLabel="Collected" format={inrK}
+            segments={[
+              { label: 'Withdrawable', value: Math.max(0, d.withdrawable), color: '#00A884' },
+              { label: 'GST set aside', value: d.output_gst, color: '#2563EB' },
+              { label: 'ULIP cost', value: d.ulip_cost, color: '#DB2777' },
+              { label: 'Gateway fees', value: d.gateway_fees, color: '#CA8A04' },
+            ]} />
+        </Panel>
+
+        {/* the walk-down */}
+        <Panel title="Turnover → withdrawable" sub="How the drawable figure is reached">
+          <div className="space-y-2 text-sm">
+            <Row label="Collected" value={d.collected} />
+            <Row label="GST set aside" value={d.output_gst} minus />
+            <Row label="ULIP API cost" value={d.ulip_cost} minus />
+            <Row label="Gateway fees" value={d.gateway_fees} minus />
+            <div className="!mt-3 flex items-center justify-between border-t border-line pt-3 font-bold">
+              <span className={neg ? 'text-bad' : 'text-brand'}>Withdrawable</span>
+              <span className={`nums ${neg ? 'text-bad' : 'text-brand'}`}>{inr(d.withdrawable)}</span>
+            </div>
           </div>
-        </div>
-        <p className="mt-4 text-xs text-muted">
-          Keep <b>{inr(d.output_gst)}</b> aside for your GST return — it isn’t part of your drawable profit.
-        </p>
+          <p className="mt-4 rounded-xl bg-warn/5 p-3 text-xs text-body">
+            Keep <b className="text-warn">{inr(d.output_gst)}</b> aside for your GST return — it isn’t part of your drawable profit.
+          </p>
+        </Panel>
       </div>
 
-      <h2 className="mt-8 mb-3 text-sm font-bold uppercase tracking-wider text-muted">By month</h2>
-      <Table cols={['Month', 'Collected', 'GST', 'ULIP', 'Fees', 'Withdrawable']}>
-        {d.months.map((m) => (
-          <tr key={m.month}>
-            <td className="td font-semibold text-ink">{m.month}</td>
-            <td className="td">{inr(m.collected)}</td>
-            <td className="td text-muted">{inr(m.output_gst)}</td>
-            <td className="td text-muted">{inr(m.ulip_cost)}</td>
-            <td className="td text-muted">{inr(m.fees)}</td>
-            <td className={`td font-bold ${Number(m.withdrawable) < 0 ? 'text-bad' : 'text-brand'}`}>{inr(m.withdrawable)}</td>
-          </tr>
-        ))}
-      </Table>
+      <Panel className="mt-6" title="By month">
+        <div className="-mx-5 -mb-5 overflow-x-auto">
+          <table className="tbl w-full min-w-[560px]">
+            <thead className="border-y border-line bg-panel"><tr>{['Month', 'Collected', 'GST', 'ULIP', 'Fees', 'Withdrawable'].map((c) => <th key={c} className="th">{c}</th>)}</tr></thead>
+            <tbody className="divide-y divide-line">
+              {d.months.map((m) => (
+                <tr key={m.month}>
+                  <td className="td font-semibold text-ink">{m.month}</td>
+                  <td className="td nums">{inr(m.collected)}</td>
+                  <td className="td text-muted nums">{inr(m.output_gst)}</td>
+                  <td className="td text-muted nums">{inr(m.ulip_cost)}</td>
+                  <td className="td text-muted nums">{inr(m.fees)}</td>
+                  <td className={`td font-bold nums ${Number(m.withdrawable) < 0 ? 'text-bad' : 'text-brand'}`}>{inr(m.withdrawable)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Panel>
     </>
   );
 }
@@ -121,7 +147,7 @@ function PaymentDrawer({ id, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/40" onClick={onClose}>
-      <div className="h-full w-full max-w-md overflow-y-auto bg-cream p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="h-full w-full max-w-md overflow-y-auto bg-panel p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-black text-ink">Payment detail</h3>
           <button className="text-muted hover:text-ink" onClick={onClose}>✕</button>

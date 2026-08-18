@@ -5,11 +5,27 @@
 :root { color-scheme: light; }
 body { @apply bg-panel text-ink font-sans antialiased; }
 
-.card { @apply rounded-2xl border border-line/60 bg-white; box-shadow: 0 1px 3px rgba(16, 24, 40, .06), 0 6px 20px rgba(16, 24, 40, .06); }
+/* Surfaces */
+.card { @apply rounded-2xl border border-line/70 bg-white; box-shadow: 0 1px 3px rgba(16, 24, 40, .05), 0 6px 20px rgba(16, 24, 40, .05); }
+.card-hover { @apply transition duration-200 hover:-translate-y-0.5; }
+.card-hover:hover { box-shadow: 0 2px 4px rgba(16,24,40,.05), 0 14px 34px rgba(16,24,40,.10); }
+
+/* Buttons */
 .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition active:scale-[.98] disabled:opacity-50 disabled:cursor-not-allowed; }
 .btn-primary { @apply btn bg-brand-accent text-white px-4 py-2.5 hover:bg-brand-light; }
 .btn-ghost { @apply btn border border-line bg-white text-ink px-4 py-2.5 hover:bg-line/40; }
 .input { @apply w-full rounded-xl border-2 border-line bg-white px-3.5 py-2.5 text-sm outline-none focus:border-brand-accent transition; }
+
+/* Tables */
 .th { @apply px-4 py-2.5 text-left text-[11px] font-bold uppercase tracking-wide text-muted; }
 .td { @apply px-4 py-3 text-sm text-body align-middle; }
 .chip { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold; }
+/* Zebra-striped rows for dense tables — subtler than borders, easier to scan */
+.tbl tbody tr:nth-child(even) { @apply bg-panel/50; }
+.tbl tbody tr:hover { @apply bg-brand/[.04]; }
+
+/* Section label — small caps eyebrow used above panels */
+.eyebrow { @apply text-[11px] font-bold uppercase tracking-[.08em] text-muted; }
+
+/* Tabular numerals so figures line up in KPI rows and tables */
+.nums { font-variant-numeric: tabular-nums; }

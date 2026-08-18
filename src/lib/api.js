@@ -93,6 +93,7 @@ export const api = {
   planHistory: () => request('/settings/plan-history'),
   setMaxVehicles: (max) => request('/settings/max-vehicles', { method: 'PUT', body: { max } }),
   setInternalNumbers: (numbers) => request('/settings/internal-numbers', { method: 'PUT', body: { numbers } }),
+  setLaunchCap: (cap) => request('/settings/launch-cap', { method: 'PUT', body: { cap } }),
   setContent: (content) => request('/settings/content', { method: 'PUT', body: content }),
   broadcast: (message, numbers) => request('/broadcast', { method: 'POST', body: { message, numbers } }),
   resetTestData: (confirm) => request('/maintenance/reset-test-data', { method: 'POST', body: { confirm } }),
