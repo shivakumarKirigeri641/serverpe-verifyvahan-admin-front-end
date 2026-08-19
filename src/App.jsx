@@ -3,6 +3,9 @@ import { getToken, clearToken, setUnauthorizedHandler } from './lib/api';
 import Login from './pages/Login.jsx';
 import Layout from './components/Layout.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import Today from './pages/Today.jsx';
+import LiveActivity from './pages/LiveActivity.jsx';
+import UsersVehicles from './pages/UsersVehicles.jsx';
 import Finance from './pages/Finance.jsx';
 import Gst from './pages/Gst.jsx';
 import Tickets from './pages/Tickets.jsx';
@@ -23,7 +26,8 @@ import Fleet from './pages/Fleet.jsx';
 import Toaster from './components/Toaster.jsx';
 
 const PAGES = {
-  dashboard: Dashboard, finance: Finance, gst: Gst, tickets: Tickets, inbox: Inbox, users: Users,
+  dashboard: Dashboard, today: Today, liveactivity: LiveActivity, usersvehicles: UsersVehicles,
+  finance: Finance, gst: Gst, tickets: Tickets, inbox: Inbox, users: Users,
   vehicles: Vehicles, visitors: Visitors, analytics: Analytics, reports: Reports, invoices: Invoices,
   logins: Logins, legal: Legal, broadcast: Broadcast, apihealth: ApiHealth, settings: Settings,
   lookup: Lookup, fleet: Fleet,

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../lib/api';
-import { Spinner, ErrorBox, PageHead } from '../components/ui.jsx';
+import { Spinner, ErrorBox, PageHead, Section } from '../components/ui.jsx';
+import SettingsOps from '../components/SettingsOps.jsx';
 
 export default function Settings() {
   const [data, setData] = useState(null);
@@ -93,9 +94,14 @@ export default function Settings() {
   const b = data.business || {};
   return (
     <>
-      <PageHead title="Settings" sub="Pricing, report validity and ULIP cost rates." />
+      <PageHead title="Settings" sub="Operations, pricing, report validity and ULIP cost rates." />
       {msg && <div className="mb-4 rounded-lg bg-ok/10 px-3 py-2 text-sm font-semibold text-ok">{msg}</div>}
 
+      {/* Operations — payment mode, system, recover payment, remove mobile, export */}
+      <Section title="Operations" sub="Payments, data tools and system health" className="!mt-0" />
+      <SettingsOps />
+
+      <Section title="Pricing & content" sub="Plans, launch offer, marketing copy" />
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Pricing & validity */}
         <div className="card p-6">

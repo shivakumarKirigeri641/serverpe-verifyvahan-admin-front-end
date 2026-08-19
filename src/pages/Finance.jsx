@@ -3,6 +3,7 @@ import { api, inr, dt, openInvoicePdf, openReportPdf } from '../lib/api';
 import { useAsync, Spinner, ErrorBox, PageHead, Table, Badge, Empty } from '../components/ui.jsx';
 import { KpiTile, Donut, Panel } from '../components/charts.jsx';
 import { toast } from '../components/Toaster.jsx';
+import Gst from './Gst.jsx';
 
 const inrK = (n) => {
   const v = Number(n) || 0;
@@ -13,20 +14,22 @@ const inrK = (n) => {
 
 const FILTERS = [['', 'All'], ['captured', 'Captured'], ['created', 'Pending'], ['failed', 'Failed']];
 
+const SUBS = { money: 'Turnover, GST and what is yours to withdraw.', payments: 'Every payment and its invoice.', gst: 'Tax collected across all invoices.' };
+
 export default function Finance() {
   const [tab, setTab] = useState('money');
   return (
     <>
-      <PageHead title="Finance" sub={tab === 'money' ? 'Turnover, GST and what is yours to withdraw.' : 'Every payment and its invoice.'}
+      <PageHead title="Finance & GST" sub={SUBS[tab]}
         right={
           <div className="flex gap-1 rounded-xl border border-line bg-white p-1">
-            {[['money', 'Money'], ['payments', 'Payments']].map(([v, l]) => (
+            {[['money', 'Money'], ['payments', 'Payments'], ['gst', 'GST']].map(([v, l]) => (
               <button key={v} onClick={() => setTab(v)}
                 className={`rounded-lg px-4 py-2 text-sm font-bold ${tab === v ? 'bg-brand text-white' : 'text-muted hover:text-ink'}`}>{l}</button>
             ))}
           </div>
         } />
-      {tab === 'money' ? <Money /> : <Payments />}
+      {tab === 'money' ? <Money /> : tab === 'payments' ? <Payments /> : <Gst embedded />}
     </>
   );
 }

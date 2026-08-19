@@ -1,24 +1,27 @@
 import { useState } from 'react';
 
+// Primary navigation — the 12 core sections.
 const NAV = [
   ['dashboard', 'Dashboard', '📊'],
+  ['today', 'Today (live)', '🟢'],
+  ['liveactivity', 'Live activity', '📡'],
+  ['analytics', 'Analytics', '📈'],
+  ['visitors', 'Visitors', '🌐'],
+  ['usersvehicles', 'Users & vehicles', '🚗'],
+  ['broadcast', 'Broadcast', '📣'],
+  ['reports', 'Reports', '📄'],
+  ['finance', 'Finance & GST', '₹'],
+  ['inbox', 'Inbox', '📥'],
+  ['tickets', 'Support', '💬'],
+  ['settings', 'Settings', '⚙️'],
+];
+
+// Secondary "Tools" group — kept reachable, out of the main flow.
+const TOOLS = [
   ['lookup', 'Vehicle lookup', '🔍'],
   ['fleet', 'Fleet / bulk', '🚛'],
-  ['finance', 'Finance', '💰'],
-  ['gst', 'GST', '📑'],
-  ['tickets', 'Support tickets', '🎫'],
-  ['inbox', 'Inbox', '📥'],
-  ['analytics', 'Analytics', '📈'],
-  ['reports', 'Reports', '📄'],
-  ['invoices', 'Invoices', '🧾'],
-  ['users', 'Users', '👤'],
-  ['logins', 'Logins', '🔑'],
-  ['vehicles', 'Vehicles', '🚗'],
-  ['visitors', 'Visitors', '🌐'],
-  ['broadcast', 'Broadcast', '📣'],
-  ['apihealth', 'API health', '🩺'],
   ['legal', 'Legal & policies', '⚖️'],
-  ['settings', 'Settings', '⚙️'],
+  ['apihealth', 'API health', '🩺'],
 ];
 
 function Mark() {
@@ -57,6 +60,14 @@ export default function Layout({ page, setPage, onLogout, children }) {
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
           {NAV.map(([id, label, icon]) => (
+            <button key={id} onClick={() => { setPage(id); setOpen(false); }}
+              className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition ${
+                page === id ? 'bg-white/15 font-semibold text-white' : 'hover:bg-white/10'}`}>
+              <span className="w-5 text-center">{icon}</span>{label}
+            </button>
+          ))}
+          <div className="px-3 pb-1 pt-4 text-[10px] font-bold uppercase tracking-[.12em] text-white/40">Tools</div>
+          {TOOLS.map(([id, label, icon]) => (
             <button key={id} onClick={() => { setPage(id); setOpen(false); }}
               className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition ${
                 page === id ? 'bg-white/15 font-semibold text-white' : 'hover:bg-white/10'}`}>

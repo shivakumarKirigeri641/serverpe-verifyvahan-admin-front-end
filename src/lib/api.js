@@ -61,6 +61,10 @@ export const api = {
   login: (pin) => request('/login', { method: 'POST', body: { pin } }),
   me: () => request('/me'),
   dashboard: () => request('/dashboard'),
+  dashboardPlus: () => request('/dashboard-plus'),
+  series: (days = 30) => request(`/series?days=${days}`),
+  activity: (limit = 60) => request(`/activity?limit=${limit}`),
+  todayLive: () => request('/today-live'),
   payments: (o) => request(`/payments${qs(o)}`),
   paymentDetail: (id) => request(`/payments/${id}`),
   sessions: (o) => request(`/sessions${qs(o)}`),
@@ -79,6 +83,10 @@ export const api = {
   reports: (o) => request(`/reports${qs(o)}`),
   invoices: (o) => request(`/invoices${qs(o)}`),
   analytics: () => request('/analytics'),
+  analyticsPlus: () => request('/analytics-plus'),
+  visitorsRich: () => request('/visitors-rich'),
+  visitorsRecent: (o) => request(`/visitors-recent${qs(o)}`),
+  visitorsGeo: () => request('/visitors-geo'),
   vehicles: (o) => request(`/vehicles${qs(o)}`),
   vehicle: (id) => request(`/vehicles/${id}`),
   inbox: () => request('/inbox'),
@@ -104,7 +112,25 @@ export const api = {
   fleetList: (o) => request(`/fleet${qs(o)}`),
   fleetGet: (id) => request(`/fleet/${id}`),
   fleetSync: (id) => request(`/fleet/${id}/sync`, { method: 'POST' }),
+  system: () => request('/settings/system'),
+  reconcilePayment: (payment_id) => request('/pay/reconcile', { method: 'POST', body: { payment_id } }),
+  mobileLookup: (mobile) => request(`/mobiles/lookup?mobile=${encodeURIComponent(mobile)}`),
+  mobilePurge: (mobile, confirm) => request('/mobiles/purge', { method: 'POST', body: { mobile, confirm } }),
 };
+
+/* Authenticated CSV download (a plain <a> can't send the bearer token). */
+export async function exportCsv(table) {
+  const res = await fetch(`${API_BASE}/admin/api/db/export?table=${table}`, {
+    headers: { Authorization: `Bearer ${getToken()}` },
+  });
+  if (res.status === 401) { clearToken(); onUnauthorized(); throw new Error('Session expired.'); }
+  if (!res.ok) throw new Error('Export failed.');
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement('a');
+  a.href = url; a.download = `gaadipe-${table}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
 
 /* The PDF endpoint needs the bearer token, so a plain link won't do — fetch it
    with auth, then open the blob in a new tab. */

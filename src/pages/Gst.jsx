@@ -9,7 +9,7 @@ const inrK = (n) => {
   return '₹' + v.toFixed(0);
 };
 
-export default function Gst() {
+export default function Gst({ embedded = false }) {
   const { data, loading, error, reload } = useAsync(() => api.gst(), []);
   if (loading) return <Spinner />;
   if (error) return <ErrorBox message={error} onRetry={reload} />;
@@ -18,8 +18,10 @@ export default function Gst() {
 
   return (
     <>
-      <PageHead title="GST" sub="Tax collected across all invoices."
-        right={<button className="btn-ghost text-sm" onClick={reload}>↻ Refresh</button>} />
+      {!embedded && (
+        <PageHead title="GST" sub="Tax collected across all invoices."
+          right={<button className="btn-ghost text-sm" onClick={reload}>↻ Refresh</button>} />
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiTile label="Invoices" value={t.invoices} />

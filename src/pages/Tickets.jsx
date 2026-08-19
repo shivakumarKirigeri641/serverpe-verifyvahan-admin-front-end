@@ -30,7 +30,7 @@ export default function Tickets() {
 
   return (
     <>
-      <PageHead title="Support tickets" sub="Email tickets (support@gaadipe.in) can be replied to right here."
+      <PageHead title="Support" sub="Email tickets (support@gaadipe.in) can be replied to right here."
         right={
           <div className="flex flex-wrap gap-1 rounded-xl border border-line bg-white p-1">
             {FILTERS.map(([v, l]) => (

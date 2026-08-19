@@ -4,10 +4,12 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Aligned 1:1 with the QuizPe admin theme (same brand teal, ink, muted,
+        // line, page background) so the two panels are visually identical.
         brand: { DEFAULT: '#075E54', light: '#13B48F', accent: '#00A884', deep: '#053F38' },
         blue: { DEFAULT: '#2563EB', soft: '#EFF6FF' },
-        ink: '#0F172A', body: '#334155', muted: '#64748B', line: '#E2E8F0',
-        panel: '#F6F8F9', ok: '#16A34A', warn: '#B45309', bad: '#DC2626',
+        ink: '#111B21', body: '#334155', muted: '#667781', line: '#E3EAE8',
+        panel: '#F4F7F6', ok: '#16A34A', warn: '#B45309', bad: '#DC2626',
         // Validated categorical ramp for charts (CVD-safe; see dataviz validator).
         // Used in fixed order, never cycled; always with a legend + direct labels.
         cat: { 1: '#00A884', 2: '#2563EB', 3: '#DB2777', 4: '#CA8A04' },
