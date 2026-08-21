@@ -2,18 +2,28 @@ import { useState } from 'react';
 import { api, dt } from '../lib/api';
 import { useAsync, Spinner, ErrorBox, PageHead, Empty } from '../components/ui.jsx';
 
+const STATUS_MARK = { sent: '✓', delivered: '✓✓', read: '✓✓', failed: '✗ failed', sending: '⏳' };
+
 export default function Inbox() {
   const { data, loading, error, reload } = useAsync(() => api.inbox(), []);
   const [openWa, setOpenWa] = useState(null);
+  const [q, setQ] = useState('');
+
+  const convos = (data?.conversations || []).filter((c) => {
+    if (!q.trim()) return true;
+    const t = q.trim().toLowerCase();
+    return [c.full_name, c.profile_name, c.wa_id].some((x) => (x || '').toLowerCase().includes(t));
+  });
 
   return (
     <>
-      <PageHead title="Inbox" sub="WhatsApp conversations." />
+      <PageHead title="Inbox" sub="WhatsApp conversations."
+        right={<input className="input !py-2 w-56" placeholder="Search number or name…" value={q} onChange={(e) => setQ(e.target.value)} />} />
 
       {loading ? <Spinner /> : error ? <ErrorBox message={error} onRetry={reload} />
-        : data.conversations.length === 0 ? <Empty>No conversations yet.</Empty> : (
+        : convos.length === 0 ? <Empty>{q ? 'No conversations match that search.' : 'No conversations yet.'}</Empty> : (
         <div className="card divide-y divide-line">
-          {data.conversations.map((c) => (
+          {convos.map((c) => (
             <button key={c.wa_id} onClick={() => setOpenWa(c.wa_id)}
               className="flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-panel">
               <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand/10 font-bold text-brand">
@@ -53,7 +63,12 @@ function Thread({ waId, onClose }) {
             <div key={m.id} className={`flex ${m.direction === 'inbound' ? 'justify-start' : 'justify-end'}`}>
               <div className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm shadow-sm ${m.direction === 'inbound' ? 'rounded-bl-sm bg-white' : 'rounded-br-sm bg-[#d9fdd3]'}`}>
                 <div className="whitespace-pre-line text-ink">{m.content || `[${m.message_type}]`}</div>
-                <div className="mt-1 text-right text-[10px] text-muted">{dt(m.created_at)}</div>
+                <div className="mt-1 text-right text-[10px] text-muted">
+                  {dt(m.created_at)}
+                  {m.direction === 'outbound' && m.status && (
+                    <span className={m.status === 'failed' ? 'text-bad' : m.status === 'read' ? 'text-sky-600' : ''}> · {STATUS_MARK[m.status] || m.status}</span>
+                  )}
+                </div>
               </div>
             </div>
           ))}

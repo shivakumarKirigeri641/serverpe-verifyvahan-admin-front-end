@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import Today from './pages/Today.jsx';
 import LiveActivity from './pages/LiveActivity.jsx';
 import UsersVehicles from './pages/UsersVehicles.jsx';
+import Watch from './pages/Watch.jsx';
 import Finance from './pages/Finance.jsx';
 import Gst from './pages/Gst.jsx';
 import Tickets from './pages/Tickets.jsx';
@@ -21,16 +22,19 @@ import Logins from './pages/Logins.jsx';
 import Legal from './pages/Legal.jsx';
 import ApiHealth from './pages/ApiHealth.jsx';
 import Settings from './pages/Settings.jsx';
+import Premium from './pages/Premium.jsx';
+import Game from './pages/Game.jsx';
+import Templates from './pages/Templates.jsx';
 import Lookup from './pages/Lookup.jsx';
 import Fleet from './pages/Fleet.jsx';
 import Toaster from './components/Toaster.jsx';
 
 const PAGES = {
   dashboard: Dashboard, today: Today, liveactivity: LiveActivity, usersvehicles: UsersVehicles,
-  finance: Finance, gst: Gst, tickets: Tickets, inbox: Inbox, users: Users,
+  watch: Watch, finance: Finance, gst: Gst, tickets: Tickets, inbox: Inbox, users: Users,
   vehicles: Vehicles, visitors: Visitors, analytics: Analytics, reports: Reports, invoices: Invoices,
   logins: Logins, legal: Legal, broadcast: Broadcast, apihealth: ApiHealth, settings: Settings,
-  lookup: Lookup, fleet: Fleet,
+  premium: Premium, game: Game, templates: Templates, lookup: Lookup, fleet: Fleet,
 };
 
 export default function App() {
