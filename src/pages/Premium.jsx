@@ -13,7 +13,7 @@ export default function Premium() {
   const flash = (m) => { setMsg(m); setTimeout(() => setMsg(''), 2500); };
 
   const load = () => api.premiumSettings()
-    .then((p) => setPricing({ base_price: 169, mid_price: 149, earned_price: 129, term_days: 28, trial_days: 7, max_vehicles: 5, annual_price: 999, annual_days: 365, ...(p.pricing || {}) }))
+    .then((p) => setPricing({ price: 99, term_days: 28, trial_days: 7, max_vehicles: 5, annual_price: 999, annual_days: 365, ...(p.pricing || {}), price: (p.pricing?.price ?? p.pricing?.earned_price ?? 99) }))
     .catch((e) => setErr(e.message));
   useEffect(() => { load(); }, []);
 
@@ -45,17 +45,15 @@ export default function Premium() {
       <Section title="Pricing & limits" sub="Applies to new trials, quotes and checkouts within a minute" className="!mt-0" />
       <div className="card p-6">
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-          <Num label="Earned price ₹ (5/5)" value={pricing.earned_price} onChange={(v) => set('earned_price', v)} />
-          <Num label="Mid price ₹ (4/5)" value={pricing.mid_price} onChange={(v) => set('mid_price', v)} />
-          <Num label="Base price ₹ (≤3/5)" value={pricing.base_price} onChange={(v) => set('base_price', v)} />
+          <Num label="Premium price ₹" value={pricing.price} onChange={(v) => set('price', v)} />
           <Num label="Term (days)" value={pricing.term_days} onChange={(v) => set('term_days', v)} />
           <Num label="Free trial (days)" value={pricing.trial_days} onChange={(v) => set('trial_days', v)} />
           <Num label="Max vehicles / mobile" value={pricing.max_vehicles} onChange={(v) => set('max_vehicles', v)} />
           <Num label="Annual price ₹" value={pricing.annual_price} onChange={(v) => set('annual_price', v)} />
         </div>
         <p className="mt-3 text-[11px] text-muted">
-          Your best day sets the price: <b>5/5 → ₹{pricing.earned_price}</b>, 4/5 → ₹{pricing.mid_price}, else ₹{pricing.base_price}.
-          Charged <b>per vehicle</b>, up to <b>{pricing.max_vehicles}</b> per mobile, each a {pricing.term_days}-day window (GST-inclusive).
+          Flat <b>₹{pricing.price}</b> per vehicle, up to <b>{pricing.max_vehicles}</b> per mobile, each a {pricing.term_days}-day window (GST-inclusive).
+          The daily number-plate game is entertainment — it does not change the price.
         </p>
         <button className="btn-primary mt-5" disabled={busy === 'pricing'} onClick={savePricing}>
           {busy === 'pricing' ? 'Saving…' : 'Save pricing'}
