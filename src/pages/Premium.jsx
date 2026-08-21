@@ -13,7 +13,7 @@ export default function Premium() {
   const flash = (m) => { setMsg(m); setTimeout(() => setMsg(''), 2500); };
 
   const load = () => api.premiumSettings()
-    .then((p) => setPricing({ base_price: 149, mid_price: 124, earned_price: 99, term_days: 28, trial_days: 7, max_vehicles: 5, annual_price: 999, annual_days: 365, ...(p.pricing || {}) }))
+    .then((p) => setPricing({ base_price: 169, mid_price: 149, earned_price: 129, term_days: 28, trial_days: 7, max_vehicles: 5, annual_price: 999, annual_days: 365, ...(p.pricing || {}) }))
     .catch((e) => setErr(e.message));
   useEffect(() => { load(); }, []);
 
