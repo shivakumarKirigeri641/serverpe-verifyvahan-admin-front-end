@@ -79,6 +79,7 @@ export const api = {
   gameSeed: (plates) => request('/game/seed', { method: 'POST', body: { plates } }),
   payments: (o) => request(`/payments${qs(o)}`),
   paymentDetail: (id) => request(`/payments/${id}`),
+  attribution: () => request('/attribution'),
   sessions: (o) => request(`/sessions${qs(o)}`),
   sessionDetail: (id) => request(`/sessions/${id}`),
   downloads: (o) => request(`/downloads${qs(o)}`),
@@ -140,6 +141,20 @@ export async function exportCsv(table) {
   const url = URL.createObjectURL(await res.blob());
   const a = document.createElement('a');
   a.href = url; a.download = `gaadipe-${table}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+/* Google Ads offline-conversion CSV (authenticated download). */
+export async function downloadAdConversions(days = 90) {
+  const res = await fetch(`${API_BASE}/admin/api/attribution/conversions.csv?days=${days}`, {
+    headers: { Authorization: `Bearer ${getToken()}` },
+  });
+  if (res.status === 401) { clearToken(); onUnauthorized(); throw new Error('Session expired.'); }
+  if (!res.ok) throw new Error('Export failed.');
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement('a');
+  a.href = url; a.download = `gaadipe-ad-conversions.csv`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }

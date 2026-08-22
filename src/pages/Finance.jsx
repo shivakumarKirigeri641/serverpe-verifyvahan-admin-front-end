@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api, inr, dt, openInvoicePdf, openReportPdf } from '../lib/api';
+import { api, inr, dt, openInvoicePdf, openReportPdf, downloadAdConversions } from '../lib/api';
 import { useAsync, Spinner, ErrorBox, PageHead, Table, Badge, Empty } from '../components/ui.jsx';
 import { KpiTile, Donut, Panel } from '../components/charts.jsx';
 import { toast } from '../components/Toaster.jsx';
@@ -98,7 +98,34 @@ function Money() {
           </table>
         </div>
       </Panel>
+
+      <AdAttribution />
     </>
+  );
+}
+
+function AdAttribution() {
+  const { data, loading, error } = useAsync(() => api.attribution(), []);
+  const dl = async () => { try { await downloadAdConversions(90); } catch (e) { toast(e.message, 'error'); } };
+  if (loading || error || !data) return null;   // optional card — never blocks the page
+  const d = data;
+  const cpa = d.ad_sales ? d.ad_revenue / d.ad_sales : 0;
+  return (
+    <Panel className="mt-6" title="Ad attribution — Google Ads → sale" sub="Clicks captured, and sales traced back to an ad click">
+      <div className="grid gap-4 sm:grid-cols-3">
+        <KpiTile label="Ad clicks captured" value={d.clicks} sub={`${d.matched} reached WhatsApp`} tone="text-brand" />
+        <KpiTile label="Ad-attributed sales" value={`${d.ad_sales} / ${d.sales}`} sub={`${inr(d.ad_revenue)} of ${inr(d.revenue)} revenue`} tone="text-ok" />
+        <div className="flex flex-col justify-center rounded-2xl border border-line p-4">
+          <button className="btn-primary text-sm" onClick={dl}>Download Google Ads conversions (CSV)</button>
+          <p className="mt-2 text-[11px] text-muted">
+            Upload in Google Ads → Tools → Conversions → Uploads to feed Smart Bidding with real sales.
+          </p>
+        </div>
+      </div>
+      <p className="mt-3 text-xs text-muted">
+        Attribution links a Google Ad click (gclid) → the WhatsApp chat it started → the purchase, so you see which ad spend actually earns.
+      </p>
+    </Panel>
   );
 }
 
