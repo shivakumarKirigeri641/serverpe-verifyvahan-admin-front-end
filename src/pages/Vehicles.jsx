@@ -31,14 +31,15 @@ export default function Vehicles() {
 
       {loading ? <Spinner /> : error ? <ErrorBox message={error} onRetry={reload} />
         : data.vehicles.length === 0 ? <Empty>No vehicles cached yet.</Empty> : (
-        <Table cols={['Plate', 'Make / model', 'Class', 'Data age', 'Accessors', 'Full reports', 'Challans', 'Tolls', '']}>
+        <Table cols={['Plate', 'Make / model', 'Class', 'Data age', 'Users', 'Total checks', 'Full reports', 'Challans', 'Tolls', '']}>
           {data.vehicles.map((v) => (
             <tr key={v.id}>
               <td className="td font-bold text-ink">{v.reg_no}</td>
               <td className="td">{[v.vehicle_manufacturer_name, v.model].filter(Boolean).join(' · ') || '—'}</td>
               <td className="td whitespace-nowrap">{v.vehicle_class || '—'}</td>
               <td className="td whitespace-nowrap"><AgeTag lastFullISO={v.last_full_at} windowDays={windowDays} /></td>
-              <td className="td font-semibold">{v.accessors}</td>
+              <td className="td font-semibold" title="Distinct users who checked this plate">{v.accessors}</td>
+              <td className="td font-bold text-ink" title="Total times this plate was checked (all users)">{v.total_checks ?? v.accessors}</td>
               <td className="td font-bold text-brand">{v.full_reports}</td>
               <td className="td">{v.challans}</td>
               <td className="td">{v.tolls}</td>
@@ -98,7 +99,9 @@ function VehicleDrawer({ id, onClose }) {
                 </div>
               </div>
 
-              <Section title={`Accessed by (${data.accessors.length})`} note="One plate, many user mobiles.">
+              <Section
+                title={`Accessed by ${data.accessors.length} user${data.accessors.length === 1 ? '' : 's'} · ${data.accessors.reduce((s, a) => s + Number(a.check_count || 0), 0)} total checks`}
+                note="Who checked this plate, and how many times.">
                 {data.accessors.length === 0 ? <Empty>No user has this vehicle linked.</Empty> : (
                   <Table cols={['User', 'WhatsApp', 'Access', 'Checks', 'First', 'Last']}>
                     {data.accessors.map((a) => (
