@@ -85,20 +85,23 @@ export default function Visitors() {
       <Section title="Recent visitors" sub="Newest first" />
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[720px] border-collapse">
-            <thead><tr>{['When', 'Page', 'Source', 'State', 'Device', 'WhatsApp'].map((h) => <th key={h} className="th bg-line/30">{h}</th>)}</tr></thead>
+          <table className="w-full min-w-[980px] border-collapse">
+            <thead><tr>{['When', 'Page', 'Source', 'IP', 'City', 'State', 'OS', 'User agent', 'WhatsApp'].map((h) => <th key={h} className="th bg-line/30">{h}</th>)}</tr></thead>
             <tbody className="divide-y divide-line">
               {recent.map((v) => (
                 <tr key={v.id} className="hover:bg-brand/[.03]">
                   <td className="td whitespace-nowrap text-muted">{dt(v.created_at)}</td>
                   <td className="td font-mono text-xs text-body">{v.path || '/'}</td>
                   <td className="td text-xs">{refShort(v.referrer)}</td>
-                  <td className="td">{v.state_name || '—'}</td>
+                  <td className="td whitespace-nowrap font-mono text-xs text-body">{v.ip || '—'}</td>
+                  <td className="td whitespace-nowrap text-xs">{v.city || '—'}</td>
+                  <td className="td whitespace-nowrap text-xs">{v.state_name || '—'}</td>
                   <td className="td text-xs">{osOf(v.user_agent)}</td>
+                  <td className="td max-w-[240px] truncate text-[11px] text-muted" title={v.user_agent || ''}>{v.user_agent || '—'}</td>
                   <td className="td">{v.is_wa_click ? <Pill tone="green">Tapped</Pill> : <span className="text-muted">—</span>}</td>
                 </tr>
               ))}
-              {recent.length === 0 && <tr><td className="td text-center text-muted" colSpan={6}>No visitors on this page.</td></tr>}
+              {recent.length === 0 && <tr><td className="td text-center text-muted" colSpan={9}>No visitors on this page.</td></tr>}
             </tbody>
           </table>
         </div>

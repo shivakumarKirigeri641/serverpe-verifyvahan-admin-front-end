@@ -35,6 +35,13 @@ export default function Dashboard() {
   const revToday = Number(plus.today.rev_today) || 0;
   const revYest = Number(plus.today.rev_yest) || 0;
   const revDelta = pct(revToday, revYest);
+  // 30-day trend deltas (latest day vs the day before) + totals for the trend charts.
+  const num = (n) => Number(n || 0).toLocaleString('en-IN');
+  const sDelta = (key) => (!series || series.length < 2 ? 0 : pct(Number(series[series.length - 1][key] || 0), Number(series[series.length - 2][key] || 0)));
+  const usersDelta = sDelta('signups');
+  const checksDelta = sDelta('checks');
+  const usersTotal = (series || []).reduce((s, r) => s + Number(r.signups || 0), 0);
+  const checksTotal = (series || []).reduce((s, r) => s + Number(r.checks || 0), 0);
   const conv = plus.cohort.paying + plus.cohort.trial
     ? Math.round((plus.cohort.paying / (plus.cohort.paying + plus.cohort.trial)) * 100) : 0;
   const curious = Math.max(0, plus.cohort.total - plus.cohort.paying - plus.cohort.trial);
@@ -118,11 +125,18 @@ export default function Dashboard() {
       {/* Section 7 & 8 — trends */}
       <Section title="Trends" sub="Last 30 days" />
       <div className="grid gap-4 lg:grid-cols-3">
-        <Panel className="lg:col-span-2" title="Last 30 days" sub="Revenue captured per day"
-          right={<TrendPill delta={revDelta} />}>
+        <Panel title="Revenue" sub="Captured per day" right={<TrendPill delta={revDelta} />}>
           <AreaChart data={series} xKey="date" yKey="revenue" format={inr} labelOf={(v) => day(v)} />
         </Panel>
-        <Panel title="Trial → paid" sub="The number that decides the business">
+        <Panel title="New users" sub={`${num(usersTotal)} in 30 days`} right={<TrendPill delta={usersDelta} />}>
+          <AreaChart data={series} xKey="date" yKey="signups" format={num} labelOf={(v) => day(v)} />
+        </Panel>
+        <Panel title="Vehicle checks" sub={`${num(checksTotal)} in 30 days`} right={<TrendPill delta={checksDelta} />}>
+          <AreaChart data={series} xKey="date" yKey="checks" format={num} labelOf={(v) => day(v)} />
+        </Panel>
+      </div>
+      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+        <Panel className="lg:col-span-2" title="Trial → paid" sub="The number that decides the business">
           <div className="text-center">
             <div className="text-5xl font-black text-brand-accent nums">{conv}%</div>
             <p className="mt-1 text-xs text-muted">{plus.cohort.paying} of {plus.cohort.paying + plus.cohort.trial} upgraded</p>
